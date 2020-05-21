@@ -1,34 +1,76 @@
+import 'isomorphic-fetch';
+import Link from 'next/link';
+
 export default class extends React.Component {
+  // getInitialProps() es una función que solo se puede ejecutar en Next.js
+
+  static async getInitialProps() {
+    // Llamo al API de audioboom y obtengo la los caneles recomendados
+    let req = await fetch('https://api.audioboom.com/channels/recommended');
+
+    //  obtengo todo lo que contiene "body": [] y lo asigno a una variable llamada channels
+    let { body: channels } = await req.json();
+
+    // Regreso todos los channels
+    console.log(channels);
+    return { channels };
+  }
+
   render() {
+    const { channels } = this.props;
     return (
       <div>
-        <h1>¡Hola Damián!</h1>
-        <p>Bievenido a Next.Js</p>
+        <header>Podcasts</header>
 
-        <img src='/static/platzi-logo.png' alt='Platzi' />
+        <div className='channels'>
+          {channels.map((channel) => (
+            <Link href="/channel">
+            <a className='channel'>
+              <img src={channel.urls.logo_image.original} alt='' />
+              <h2>{channel.title}</h2>
+            </a>
+            </Link>
+          ))}
+        </div>
 
         <style jsx>{`
-          h1 {
+          header {
             color: #fff;
+            background: #8756ca;
+            padding: 15px;
             text-align: center;
           }
-          div :global(p) {
-            color: #ccc;
-            text-align: center;
-            margin-bottom: 1.5rem;
+          .channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-gap: 15px;
+            padding: 15px;
           }
-          img {
-            max-width: 50%;
+          .channel {
             display: block;
-            margin 0 auto;
+            border-radius: 3px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+            margin-bottom: 0.5em;
+          }
+          .channel img {
+            width: 100%;
+          }
+          h2 {
+            padding: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 0;
+            text-align: center;
           }
         `}</style>
 
         <style jsx global>{`
-          body {
-            background: #333;
-          }
-        `}</style>
+            body {
+                margin: 0;
+                font-family: system-ui
+                background: white;
+            }
+            `}</style>
       </div>
     );
   }
