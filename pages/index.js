@@ -12,7 +12,6 @@ export default class extends React.Component {
     let { body: channels } = await req.json();
 
     // Regreso todos los channels
-    console.log(channels);
     return { channels };
   }
 
@@ -23,12 +22,12 @@ export default class extends React.Component {
         <header>Podcasts</header>
 
         <div className='channels'>
-          {channels.map((channel) => (
-            <Link href="/channel">
-            <a className='channel'>
-              <img src={channel.urls.logo_image.original} alt='' />
-              <h2>{channel.title}</h2>
-            </a>
+          {channels.map((channel, i) => (
+            <Link href={`/channel?id=${channel.id}`} key={i}>
+              <a className='channel'>
+                <img src={channel.urls.logo_image.original} alt='' />
+                <h2>{channel.title}</h2>
+              </a>
             </Link>
           ))}
         </div>
