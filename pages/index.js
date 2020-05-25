@@ -1,4 +1,5 @@
-import 'isomorphic-fetch';
+// Next.js usa import dinámico. Cuando se llama React lo importa automáticamente sin tener import explícito
+import 'isomorphic-fetch'; // importando fetch para todas las pages
 import Link from 'next/link';
 
 export default class extends React.Component {
