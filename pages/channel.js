@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import Layout from '../components/Layout';
+import PodcastList from '../components/PodcastList';
 
 class Channel extends React.Component {
   static async getInitialProps({ query }) {
@@ -28,9 +30,7 @@ class Channel extends React.Component {
     const { channel, audioClips, series } = this.props;
 
     return (
-      <div>
-        <header>Podcasts</header>
-
+      <Layout title={channel.title}>
         <div className='banner' style={{ backgroundImage: `url(${channel.urls.banner_image.original})` }} />
 
         <h1>{channel.title}</h1>
@@ -52,47 +52,15 @@ class Channel extends React.Component {
         )}
 
         <h2>Ultimos Podcasts</h2>
-        {audioClips.map((clip, i ) => (
-          <Link href={`/podcast?id=${clip.id}`} key={i}>
-            <a className='podcast'>
-              <h3>{clip.title}</h3>
-              <div className='meta'>{Math.ceil(clip.duration / 60)} minutes</div>
-            </a>
-          </Link>
-        ))}
+        <PodcastList audioClips={audioClips} />
 
         <style jsx>{`
-          header {
-            color: #fff;
-            background: #8756ca;
-            padding: 15px;
-            text-align: center;
-          }
           .banner {
             width: 100%;
             padding-bottom: 25%;
             background-position: 50% 50%;
             background-size: cover;
             background-color: #aaa;
-          }
-          .channels {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            grid-gap: 15px;
-            padding: 15px;
-          }
-          .channel {
-            display: block;
-            border-radius: 3px;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
-            margin-bottom: 0.5em;
-          }
-          .channel img {
-            width: 100%;
-          }
-          h1 {
-            font-weight: 600;
-            padding: 15px;
           }
           h2 {
             padding: 5px;
@@ -101,25 +69,28 @@ class Channel extends React.Component {
             margin: 0;
             text-align: center;
           }
-          .podcast {
-            display: block;
-            text-decoration: none;
-            color: #333;
-            padding: 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-          }
-          .podcast:hover {
-            color: #000;
-          }
-          .podcast h3 {
-            margin: 0;
-          }
-          .podcast .meta {
-            color: #666;
-            margin-top: 0.5em;
-            font-size: 0.8em;
-          }
+          .channels {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          grid-gap: 15px;
+          padding: 15px;
+        }
+        .channel {
+          display: block;
+          border-radius: 3px;
+          box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+          margin-bottom: 0.5em;
+        }
+        .channel img {
+          width: 100%;
+        }
+        h2 {
+          padding: 5px;
+          font-size: 0.9em;
+          font-weight: 600;
+          margin: 0;
+          text-align: center;
+        }
         `}</style>
         <style jsx global>{`
             body {
@@ -128,7 +99,7 @@ class Channel extends React.Component {
                 background: white;
             }
             `}</style>
-      </div>
+      </Layout>
     );
   }
 }

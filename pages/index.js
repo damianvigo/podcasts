@@ -1,6 +1,8 @@
 // Next.js usa import dinámico. Cuando se llama React lo importa automáticamente sin tener import explícito
 import 'isomorphic-fetch'; // importando fetch para todas las pages
 import Link from 'next/link';
+import Layout from '../components/Layout';
+import ChannelGrid from '../components/ChannelGrid';
 
 export default class extends React.Component {
   // getInitialProps() es una función que solo se puede ejecutar en Next.js
@@ -18,60 +20,11 @@ export default class extends React.Component {
 
   render() {
     const { channels } = this.props;
+
     return (
-      <div>
-        <header>Podcasts</header>
-
-        <div className='channels'>
-          {channels.map((channel, i) => (
-            <Link href={`/channel?id=${channel.id}`} key={i}>
-              <a className='channel'>
-                <img src={channel.urls.logo_image.original} alt='' />
-                <h2>{channel.title}</h2>
-              </a>
-            </Link>
-          ))}
-        </div>
-
-        <style jsx>{`
-          header {
-            color: #fff;
-            background: #8756ca;
-            padding: 15px;
-            text-align: center;
-          }
-          .channels {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            grid-gap: 15px;
-            padding: 15px;
-          }
-          .channel {
-            display: block;
-            border-radius: 3px;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
-            margin-bottom: 0.5em;
-          }
-          .channel img {
-            width: 100%;
-          }
-          h2 {
-            padding: 5px;
-            font-size: 0.9em;
-            font-weight: 600;
-            margin: 0;
-            text-align: center;
-          }
-        `}</style>
-
-        <style jsx global>{`
-            body {
-                margin: 0;
-                font-family: system-ui
-                background: white;
-            }
-            `}</style>
-      </div>
+      <Layout title='App de Podcasts'>
+        <ChannelGrid channels={channels} />
+      </Layout>
     );
   }
 }
