@@ -34,12 +34,12 @@ class Layout extends React.Component {
         `}</style>
 
         <style jsx global>{`
-            body {
-                margin: 0;
-                font-family: system-ui
-                background: white;
-            }
-            `}</style>
+          body {
+            margin: 0;
+            font-family: system-ui;
+            background: white;
+          }
+        `}</style>
       </div>
     );
   }

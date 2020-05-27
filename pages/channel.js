@@ -1,33 +1,47 @@
 import Link from 'next/link';
 import Layout from '../components/Layout';
 import PodcastList from '../components/PodcastList';
+import Error from './_error';
 
 class Channel extends React.Component {
-  static async getInitialProps({ query }) {
+  static async getInitialProps({ query, res }) {
     let idChannel = query.id;
 
-    let [reqChannel, reqSeries, reqAudios] = await Promise.all([
-      fetch(`https://api.audioboom.com/channels/${idChannel}`),
-      fetch(`https://api.audioboom.com/channels/${idChannel}/child_channels`),
-      fetch(`https://api.audioboom.com/channels/${idChannel}/audio_clips`),
-    ]);
+    try {
+      let [reqChannel, reqSeries, reqAudios] = await Promise.all([
+        fetch(`https://api.audioboom.com/channels/${idChannel}`),
+        fetch(`https://api.audioboom.com/channels/${idChannel}/child_channels`),
+        fetch(`https://api.audioboom.com/channels/${idChannel}/audio_clips`),
+      ]);
 
-    let dataChannel = await reqChannel.json();
-    let channel = dataChannel.body.channel;
+      if (reqChannel.status >= 404) {
+        res.statusCode = reqChannel.status;
+        return { channel: null, audioClips: null, series: null, statusCode: 404 };
+      }
 
-    let dataAudios = await reqAudios.json();
-    let audioClips = dataAudios.body.audio_clips;
+      let dataChannel = await reqChannel.json();
+      let channel = dataChannel.body.channel;
 
-    let dataSeries = await reqSeries.json();
-    let series = dataSeries.body.channels;
+      let dataAudios = await reqAudios.json();
+      let audioClips = dataAudios.body.audio_clips;
 
-    let response = { channel, audioClips, series };
+      let dataSeries = await reqSeries.json();
+      let series = dataSeries.body.channels;
 
-    return { ...response };
+      let response = { channel, audioClips, series, statusCode: 200 };
+
+      return { ...response };
+    } catch (e) {
+      return { channel: null, audioClips: null, series: null, statusCode: 503 };
+    }
   }
 
   render() {
-    const { channel, audioClips, series } = this.props;
+    const { channel, audioClips, series, statusCode } = this.props;
+
+    if (statusCode !== 200) {
+      return <Error statusCode={statusCode} />;
+    }
 
     return (
       <Layout title={channel.title}>
@@ -62,43 +76,38 @@ class Channel extends React.Component {
             background-size: cover;
             background-color: #aaa;
           }
+          h1 {
+            padding: 5px;
+            font-size: 2em;
+            font-weight: 600;
+            margin: 1em 0;
+            text-align: center;
+          }
+          .channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-gap: 15px;
+            padding: 15px;
+          }
+          .channel {
+            display: block;
+            border-radius: 3px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+            margin-bottom: 0.5em;
+            text-decoration: none;
+            color: #000;
+          }
+          .channel img {
+            width: 100%;
+          }
           h2 {
             padding: 5px;
-            font-size: 0.9em;
+            font-size: 1.5em;
             font-weight: 600;
             margin: 0;
             text-align: center;
           }
-          .channels {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          grid-gap: 15px;
-          padding: 15px;
-        }
-        .channel {
-          display: block;
-          border-radius: 3px;
-          box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
-          margin-bottom: 0.5em;
-        }
-        .channel img {
-          width: 100%;
-        }
-        h2 {
-          padding: 5px;
-          font-size: 0.9em;
-          font-weight: 600;
-          margin: 0;
-          text-align: center;
-        }
         `}</style>
-        <style jsx global>{`
-            body {
-                margin: 0;
-                font-family: system-ui
-                background: white;
-            }
-            `}</style>
       </Layout>
     );
   }
